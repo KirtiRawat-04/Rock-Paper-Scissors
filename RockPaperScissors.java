@@ -1,4 +1,3 @@
-package src;
 import java.util.Scanner;
 import java.util.Random;
 
@@ -28,8 +27,8 @@ public class RockPaperScissors {
             if (playerChoice == computerChoice) {
                 System.out.println("It's a tie!");
             } else if ((playerChoice == 0 && computerChoice == 2) ||
-                    (playerChoice == 1 && computerChoice == 0) ||
-                    (playerChoice == 2 && computerChoice == 1)) {
+                       (playerChoice == 1 && computerChoice == 0) ||
+                       (playerChoice == 2 && computerChoice == 1)) {
                 System.out.println("You win!");
             } else {
                 System.out.println("Computer wins!");
