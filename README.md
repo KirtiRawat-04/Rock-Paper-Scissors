@@ -1,43 +1,65 @@
-# RockPaperScissors Game
-A simple implementation of the classic "Rock, Paper, Scissors" game in Java. This console-based program allows users to play against the computer with basic game mechanics.
+# 🎮 Rock Paper Scissors Game  
 
-## Features
-- Play against the computer
-- Input options: Rock, Paper, Scissors
-- Randomized computer choices
-- Score tracking for user and computer
-- User-friendly command-line interface
-## How to Play
-1. Clone the repository or download the source files.
-2. Compile the Java file using a Java compiler:
+A simple **Rock-Paper-Scissors** game built using **HTML, CSS, and JavaScript**.  
+Play against the computer and see who wins!  
 
-       javac RockPaperScissors.java
-3. Run the compiled program:
+---
 
-       java RockPaperScissors
-4. Follow the on-screen instructions:
-- Input your choice (Rock, Paper, or Scissors).
-- The program will randomly select a choice for the computer.
-- The result will be displayed (Win, Lose, or Draw).
-- The game will continue unless the user decides to quit.
-## Rules
-- Rock beats Scissors
-- Scissors beats Paper
-- Paper beats Rock
-## Example Output
+## 🚀 Live Demo  
+👉 [Play Now](https://KirtiRawat.github.io/rock-paper-scissors/)  
 
-    Welcome to Rock, Paper, Scissors!
-    Enter your move (Rock, Paper, or Scissors). To exit the game, type "quit":
-    > Rock
-    Computer chose Scissors.
-    You win!
+---
 
-    Do you want to play again? (yes/no)
-## Requirements
-- Java 8 or higher
-## Future Enhancements
-- Add a graphical user interface (GUI)
-- Introduce more game modes (e.g., multiplayer)
-- Add detailed game statistics and analytics
+## 🖼️ Screenshot  
+![Game Screenshot](screenshot.png)  
+
+---
+
+## ⚡ Features  
+- Player vs Computer  
+- Random computer choice  
+- Instant result display (Win / Lose / Draw)  
+- Simple & responsive UI  
+
+---
+
+## 📂 Project Structure  
+```
+
+rock-paper-scissors/
+│── index.html     # Main HTML file
+│── style.css      # CSS styling
+│── script.js      # Game logic
+│── README.md      # Documentation
+
+````
+
+---
+
+## 🛠️ How to Run Locally  
+1. Clone this repository  
+   ```bash
+   git clone https://github.com/<your-username>/rock-paper-scissors.git
+   ````
+
+2. Open the folder
+
+   ```bash
+   cd rock-paper-scissors
+   ```
+3. Open `index.html` in your browser
+
+---
+
+## 🌐 Deployment on GitHub Pages
+
+1. Push your project to a GitHub repository
+2. Go to **Repository Settings → Pages**
+3. Select **main branch → /root**
+4. Save → Your game will be live at:
+
+   ```
+   https://KirtiRawat-04.github.io/rock-paper-scissors/
+   ```
 
 ---
