@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Rock · Paper · Scissors</title>
+  <style>
+    :root{
+      --bg:#0f1221; --panel:#141935; --accent:#6ee7ff; --accent-2:#a78bfa; --text:#e7ecff; --muted:#9aa3b2;
+      --win:#22c55e; --lose:#ef4444; --tie:#f59e0b;
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:system-ui,Segoe UI,Roboto,Inter,Arial,sans-serif; color:var(--text);
+      background: radial-gradient(1200px 600px at 80% -10%, #20306a 0%, transparent 60%) , var(--bg);
+      display:grid; place-items:center; padding:24px;
+    }
+    .app{
+      width:min(900px, 95vw);
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      border:1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(6px);
+      border-radius:var(--radius);
+      box-shadow: 0 20px 50px rgba(0,0,0,.45);
+      overflow:hidden;
+    }
+    header{
+      padding:22px 24px;
+      background:linear-gradient(180deg, rgba(110,231,255,.1), rgba(167,139,250,.06));
+      border-bottom:1px solid rgba(255,255,255,0.08);
+      display:flex; align-items:center; gap:14px; justify-content:space-between; flex-wrap:wrap;
+    }
+    .title{display:flex; align-items:center; gap:12px; font-weight:700; letter-spacing:.4px}
+    .logo{
+      width:38px; height:38px; border-radius:12px; display:grid; place-items:center;
+      background: conic-gradient(from 120deg, var(--accent), var(--accent-2), var(--accent));
+      color:#0b1022; font-size:20px; font-weight:900;
+      box-shadow: 0 8px 18px rgba(110,231,255,.25);
+    }
+    .controls{display:flex; gap:10px; align-items:center}
+    .btn{
+      appearance:none; border:none; cursor:pointer; padding:10px 14px; border-radius:12px;
+      background: #1a2147; color:var(--text); border:1px solid rgba(255,255,255,0.08);
+      transition: transform .08s ease, background .2s ease, border-color .2s ease;
+      font-weight:600
+    }
+    .btn:hover{transform: translateY(-1px); background:#1d2550}
+    .btn:active{transform: translateY(0)}
+    .btn.secondary{background:transparent; color:var(--muted)}
+    .scoreboard{
+      display:grid; grid-template-columns:1fr auto 1fr; gap:14px; align-items:center;
+      padding:18px 24px; background:rgba(255,255,255,0.02); border-bottom:1px solid rgba(255,255,255,0.06)
+    }
+    .scorebox{
+      background: #111735; border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:14px 16px;
+      display:flex; justify-content:space-between; gap:10px; align-items:center
+    }
+    .scorebox small{color:var(--muted); display:block; font-weight:600; font-size:13px}
+    .score{font-size:22px; font-weight:800}
+    .vs{font-weight:800; color:var(--accent); opacity:.7}
+    .arena{padding:28px 24px}
+    .cards{display:grid; grid-template-columns:repeat(2,1fr); gap:18px}
+    .card{
+      background:var(--panel); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:16px;
+      min-height:160px; display:grid; place-items:center; text-align:center; position:relative; overflow:hidden
+    }
+    .card h3{margin:0; font-size:14px; color:var(--muted); font-weight:700; letter-spacing:.6px; text-transform:uppercase}
+    .big{
+      font-size:62px; line-height:1; margin-top:8px; filter: drop-shadow(0 6px 12px rgba(0,0,0,.25));
+      transition: transform .25s ease
+    }
+    .result{
+      margin-top:22px; text-align:center; font-weight:800; letter-spacing:.4px
+    }
+    .result.win{color:var(--win)} .result.lose{color:var(--lose)} .result.tie{color:var(--tie)}
+    .choices{margin-top:20px; display:flex; flex-wrap:wrap; gap:12px; justify-content:center}
+    .choice{
+      width:88px; height:88px; border-radius:18px; display:grid; place-items:center; font-size:36px; cursor:pointer;
+      background:#121736; border:1px solid rgba(255,255,255,.1); transition: transform .08s ease, box-shadow .2s ease, border-color .2s ease
+    }
+    .choice:hover{transform: translateY(-2px); box-shadow:0 10px 20px rgba(0,0,0,.35)}
+    .choice:active{transform: translateY(0)}
+    .hint{margin-top:8px; color:var(--muted); font-size:12px; text-align:center}
+    footer{padding:14px 18px; color:var(--muted); font-size:12px; text-align:center; border-top:1px solid rgba(255,255,255,.06)}
+    @media (max-width:640px){
+      .big{font-size:52px}
+      .choice{width:80px; height:80px; font-size:32px}
+      .score{font-size:20px}
+    }
+  </style>
+</head>
+<body>
+  <main class="app" role="application" aria-label="Rock Paper Scissors game">
+    <header>
+      <div class="title">
+        <div class="logo">R</div>
+        <div>
+          <div style="font-size:16px; font-weight:800">Rock · Paper · Scissors</div>
+          <div style="font-size:12px; color:var(--muted)">Best of luck! First to 5 wins.</div>
+        </div>
+      </div>
+      <div class="controls">
+        <button class="btn" id="resetBtn" title="Reset scores (R)">Reset</button>
+        <button class="btn secondary" id="muteBtn" title="Toggle sounds (M)">🔊 Sound</button>
+      </div>
+    </header>
+
+    <section class="scoreboard" aria-live="polite">
+      <div class="scorebox">
+        <div>
+          <small>You</small>
+          <div class="score" id="youScore">0</div>
+        </div>
+        <div id="youLast" style="opacity:.8">—</div>
+      </div>
+      <div class="vs">VS</div>
+      <div class="scorebox">
+        <div>
+          <small>Computer</small>
+          <div class="score" id="cpuScore">0</div>
+        </div>
+        <div id="cpuLast" style="opacity:.8">—</div>
+      </div>
+    </section>
+
+    <section class="arena">
+      <div class="cards">
+        <div class="card" aria-label="Your pick">
+          <h3>Your pick</h3>
+          <div class="big" id="youPick">❔</div>
+        </div>
+        <div class="card" aria-label="Computer pick">
+          <h3>Computer</h3>
+          <div class="big" id="cpuPick">❔</div>
+        </div>
+      </div>
+
+      <div id="result" class="result tie">Make your move</div>
+
+      <div class="choices" role="group" aria-label="Choose Rock, Paper or Scissors">
+        <button class="choice" data-move="rock" title="Rock (A / 1)">🪨</button>
+        <button class="choice" data-move="paper" title="Paper (S / 2)">📄</button>
+        <button class="choice" data-move="scissors" title="Scissors (D / 3)">✂️</button>
+      </div>
+      <div class="hint">Shortcuts: A/S/D or 1/2/3 · Reset: R · Mute: M</div>
+    </section>
+
+    <footer>
+      Built with vanilla HTML/CSS/JS · No dependencies · Drop this file on GitHub Pages
+    </footer>
+  </main>
+
+  <script>
+    // --- Game State ---
+    const state = {
+      you: 0, cpu: 0, target: 5, muted: false
+    };
+
+    const map = { rock: "🪨", paper: "📄", scissors: "✂️" };
+    const beats = { rock: "scissors", paper: "rock", scissors: "paper" };
+    const moves = Object.keys(map);
+
+    // --- Elements ---
+    const youScoreEl = document.getElementById("youScore");
+    const cpuScoreEl = document.getElementById("cpuScore");
+    const youPickEl  = document.getElementById("youPick");
+    const cpuPickEl  = document.getElementById("cpuPick");
+    const resultEl   = document.getElementById("result");
+    const resetBtn   = document.getElementById("resetBtn");
+    const muteBtn    = document.getElementById("muteBtn");
+    const youLastEl  = document.getElementById("youLast");
+    const cpuLastEl  = document.getElementById("cpuLast");
+
+    // --- Tiny Beep (no external files) ---
+    function beep(freq=660, duration=90, type="sine"){
+      if(state.muted) return;
+      try{
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = type; o.frequency.value = freq;
+        o.connect(g); g.connect(ctx.destination);
+        o.start();
+        g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration/1000);
+        setTimeout(()=>{ o.stop(); ctx.close(); }, duration+20);
+      }catch(_){}
+    }
+
+    function animate(el){
+      el.style.transform = "scale(1.08)";
+      setTimeout(()=>el.style.transform = "", 160);
+    }
+
+    function randCpu(){
+      return moves[Math.floor(Math.random() * moves.length)];
+    }
+
+    function updateScores(){
+      youScoreEl.textContent = state.you;
+      cpuScoreEl.textContent = state.cpu;
+    }
+
+    function setResult(text, cls){
+      resultEl.className = "result " + cls;
+      resultEl.textContent = text;
+    }
+
+    function round(youMove){
+      const cpuMove = randCpu();
+      youPickEl.textContent = map[youMove];
+      cpuPickEl.textContent = map[cpuMove];
+      youLastEl.textContent = youMove;
+      cpuLastEl.textContent = cpuMove;
+      animate(youPickEl); animate(cpuPickEl);
+
+      if(youMove === cpuMove){
+        setResult("It's a tie!", "tie");
+        beep(520, 70, "triangle");
+      } else if (beats[youMove] === cpuMove){
+        state.you++; updateScores();
+        setResult("You win this round!", "win");
+        beep(740, 100, "sawtooth");
+      } else {
+        state.cpu++; updateScores();
+        setResult("Computer scores!", "lose");
+        beep(360, 110, "square");
+      }
+
+      checkMatchEnd();
+    }
+
+    function checkMatchEnd(){
+      if(state.you >= state.target || state.cpu >= state.target){
+        const youWon = state.you > state.cpu;
+        setResult(youWon ? "🏆 You won the match!" : "🤖 Computer won the match!", youWon ? "win" : "lose");
+        beep( youWon ? 900 : 250, 200, youWon ? "sine" : "square");
+        // Lock picks visually (but keep allowing new match via Reset)
+        document.querySelectorAll(".choice").forEach(c => c.disabled = true);
+        resetBtn.focus();
+      }
+    }
+
+    function reset(all=true){
+      state.you = 0; state.cpu = 0; updateScores();
+      youPickEl.textContent = "❔"; cpuPickEl.textContent = "❔";
+      youLastEl.textContent = "—"; cpuLastEl.textContent = "—";
+      setResult("Make your move", "tie");
+      document.querySelectorAll(".choice").forEach(c => c.disabled = false);
+      if(all) beep(600, 80);
+    }
+
+    // --- Events ---
+    document.querySelectorAll(".choice").forEach(btn=>{
+      btn.addEventListener("click", ()=> round(btn.dataset.move));
+    });
+
+    resetBtn.addEventListener("click", ()=> reset(true));
+    muteBtn.addEventListener("click", ()=>{
+      state.muted = !state.muted;
+      muteBtn.textContent = state.muted ? "🔇 Muted" : "🔊 Sound";
+    });
+
+    // Keyboard shortcuts
+    window.addEventListener("keydown", (e)=>{
+      const k = e.key.toLowerCase();
+      if(k === "r") return reset(true);
+      if(k === "m") { state.muted = !state.muted; muteBtn.textContent = state.muted ? "🔇 Muted" : "🔊 Sound"; return; }
+      if(["a","1"].includes(k)) return round("rock");
+      if(["s","2"].includes(k)) return round("paper");
+      if(["d","3"].includes(k)) return round("scissors");
+    });
+
+    // Start fresh
+    reset(false);
+  </script>
+</body>
+</html>
+import java.util.Scanner;
+import java.util.Random;
+
+public class RockPaperScissors {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Random random = new Random();
+        String[] options = {"Rock", "Paper", "Scissors"};
+
+        System.out.println("Welcome to Rock, Paper, Scissors Game!");
+        System.out.println("Enter 0 for Rock, 1 for Paper, or 2 for Scissors.");
+
+        try {
+            System.out.print("Your choice: ");
+            int playerChoice = scanner.nextInt();
+
+            if (playerChoice < 0 || playerChoice > 2) {
+                System.out.println("Invalid input! Please enter 0, 1, or 2.");
+                return;
+            }
+
+            int computerChoice = random.nextInt(3);
+
+            System.out.println("You chose: " + options[playerChoice]);
+            System.out.println("Computer chose: " + options[computerChoice]);
+
+            if (playerChoice == computerChoice) {
+                System.out.println("It's a tie!");
+            } else if ((playerChoice == 0 && computerChoice == 2) ||
+                       (playerChoice == 1 && computerChoice == 0) ||
+                       (playerChoice == 2 && computerChoice == 1)) {
+                System.out.println("You win!");
+            } else {
+                System.out.println("Computer wins!");
+            }
+
+        } catch (Exception e) {
+            System.out.println("Invalid input! Please enter a number (0, 1, or 2).");
+        } finally {
+            scanner.close();
+        }
+    }
+}
